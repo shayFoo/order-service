@@ -38,7 +38,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:r2dbc")
-    testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot:3.10.6")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
