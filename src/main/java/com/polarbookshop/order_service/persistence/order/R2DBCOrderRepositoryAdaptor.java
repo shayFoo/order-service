@@ -21,12 +21,6 @@ public class R2DBCOrderRepositoryAdaptor implements OrderRepository {
     }
 
     @Override
-    public Mono<Order> findById(long id) {
-        return repository.findById(id)
-                .map(OrderEntity::toDomain);
-    }
-
-    @Override
     public Mono<Order> save(Order order) {
         return Mono.just(order)
                 .map(OrderEntity::of)
