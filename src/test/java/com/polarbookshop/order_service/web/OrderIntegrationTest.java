@@ -108,14 +108,14 @@ public class OrderIntegrationTest {
                 })
                 .returnResult();
 
-        assertEventPublish(exchangeResult);
+        assertEventPublished(exchangeResult);
         StepVerifier.create(orderRepository.findAll())
                 .expectNextMatches(order -> order.bookIsbn().equals("1234567890") && order.quantity() == 3)
                 .expectComplete()
                 .verify();
     }
 
-    private void assertEventPublish(EntityExchangeResult<OrderResponse> exchangeResult) throws IOException {
+    private void assertEventPublished(EntityExchangeResult<OrderResponse> exchangeResult) throws IOException {
         OrderResponse response = exchangeResult.getResponseBody();
         Message<byte[]> result = output.receive(500, "order-accepted");
         OrderDispatchedMessage message = objectMapper.readValue(result.getPayload(), OrderDispatchedMessage.class);
