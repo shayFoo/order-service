@@ -10,6 +10,7 @@ public record Book(
 ) {
     public Order toAcceptedOrder(int quantity) {
         return Order.accepted(
+                0,
                 this.isbn,
                 this.title + " by " + this.author,
                 this.price,

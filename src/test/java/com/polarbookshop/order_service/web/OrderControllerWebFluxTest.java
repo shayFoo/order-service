@@ -25,7 +25,7 @@ public class OrderControllerWebFluxTest {
     @Test
     void whenBookNotAvailableTHenRejectOrder() {
         OrderRequest orderRequest = new OrderRequest("1234567890", 3);
-        Order expected = Order.rejected(orderRequest.isbn(), orderRequest.quantity());
+        Order expected = Order.rejected(1, orderRequest.isbn(), orderRequest.quantity());
         BDDMockito.given(orderService.submitOrder(orderRequest.isbn(), orderRequest.quantity()))
                 .willReturn(Mono.just(expected));
 

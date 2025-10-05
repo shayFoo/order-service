@@ -1,6 +1,7 @@
 package com.polarbookshop.order_service.domain.order;
 
 import com.polarbookshop.order_service.api.book.BookClient;
+import com.polarbookshop.order_service.event.message.OrderDispatchedMessage;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,7 +23,12 @@ public class OrderService {
     public Mono<Order> submitOrder(String isbn, int quantity) {
         return bookClient.getBookByIsbn(isbn)
                 .map(book -> book.toAcceptedOrder(quantity))
-                .defaultIfEmpty(Order.rejected(isbn, quantity))
-                .flatMap(repository::submitOrder);
+                .defaultIfEmpty(Order.rejected(0, isbn, quantity))
+                .flatMap(repository::save);
+    }
+
+    public Flux<Order> consumeOrderDispatchedEvent(Flux<OrderDispatchedMessage> flux) {
+        return flux.map(OrderDispatchedMessage::orderId)
+                .flatMap(repository::dispatch);
     }
 }

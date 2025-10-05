@@ -48,8 +48,8 @@ public class OrderRepositoryR2dbcTests {
 
     @Test
     void createRejectedOrder() {
-        Order rejected = Order.rejected("1234567890", 1);
-        StepVerifier.create(orderRepository.submitOrder(rejected))
+        Order rejected = Order.rejected(1, "1234567890", 1);
+        StepVerifier.create(orderRepository.save(rejected))
                 .expectNextMatches(order -> order.status().equals(OrderStatus.REJECTED))
                 .verifyComplete();
     }
