@@ -8,9 +8,11 @@ public record Book(
         String author,
         double price
 ) {
+    private static final int ORDER_ID_NOT_SET = 0;
+
     public Order toAcceptedOrder(int quantity) {
         return Order.accepted(
-                0,
+                ORDER_ID_NOT_SET,
                 this.isbn,
                 this.title + " by " + this.author,
                 this.price,
