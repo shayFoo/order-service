@@ -4,6 +4,7 @@ import com.polarbookshop.order_service.domain.order.Order;
 import com.polarbookshop.order_service.domain.order.OrderStatus;
 
 public record OrderResponse(
+        long orderId,
         String bookIsbn,
         String bookName,
         double bookPrice,
@@ -12,6 +13,7 @@ public record OrderResponse(
 ) {
     public static OrderResponse from(Order order) {
         return new OrderResponse(
+                order.id(),
                 order.bookIsbn(),
                 order.bookName(),
                 order.bookPrice(),

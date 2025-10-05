@@ -24,7 +24,6 @@ public class OrderController {
 
     @PostMapping
     public Mono<ResponseEntity<OrderResponse>> submitOrder(@RequestBody OrderRequest request) {
-        // currently, all orders are rejected
         return service.submitOrder(request.isbn(), request.quantity())
                 .map(OrderResponse::from)
                 .map(resp -> resp.status() == OrderStatus.REJECTED

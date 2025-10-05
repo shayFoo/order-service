@@ -46,11 +46,26 @@ public record OrderEntity(
 
     public Order toDomain() {
         return new Order(
+                this.id,
                 this.bookIsbn,
                 this.bookName,
                 this.bookPrice,
                 this.quantity,
                 this.status
+        );
+    }
+
+    public OrderEntity dispatched() {
+        return new OrderEntity(
+                this.id,
+                this.bookIsbn,
+                this.bookName,
+                this.bookPrice,
+                this.quantity,
+                OrderStatus.DISPATCHED,
+                this.createdAt,
+                this.updatedAt,
+                this.version
         );
     }
 }
