@@ -1,4 +1,4 @@
-package com.polarbookshop.order_service.event;
+package com.polarbookshop.order_service.event.function;
 
 import com.polarbookshop.order_service.domain.order.OrderService;
 import com.polarbookshop.order_service.event.message.OrderDispatchedMessage;
