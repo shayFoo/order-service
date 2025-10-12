@@ -60,13 +60,16 @@ spring:
     endpoints:
       web:
         exposure:
-          include: health
+          include: health,prometheus
     endpoint:
       health:
         show-details: always
         show-components: always
         probes:
           enabled: true
+    metrics:
+      tags:
+        application: ${spring.application.name}
 server:
   port: 9002
   shutdown: graceful
