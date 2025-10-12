@@ -24,6 +24,10 @@ public class OrderService {
         return repository.findAll();
     }
 
+    public Flux<Order> getOrdersForUser(String userId) {
+        return repository.findAllByCreatedBy(userId);
+    }
+
     @Transactional
     public Mono<Order> submitOrder(String isbn, int quantity) {
         return bookClient.getBookByIsbn(isbn)

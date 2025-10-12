@@ -21,6 +21,12 @@ public class R2DBCOrderRepositoryAdaptor implements OrderRepository {
     }
 
     @Override
+    public Flux<Order> findAllByCreatedBy(String userId) {
+        return repository.findAllByCreatedBy(userId)
+                .map(OrderEntity::toDomain);
+    }
+
+    @Override
     public Mono<Order> save(Order order) {
         return Mono.just(order)
                 .map(OrderEntity::of)
