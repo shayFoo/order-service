@@ -15,7 +15,7 @@ spec:
         app: order-service
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "9001"
+        prometheus.io/port: "9002"
         prometheus.io/path: "/actuator/prometheus"
     spec:
       securityContext:
@@ -66,13 +66,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 9000
+              port: 9002
             initialDelaySeconds: 10
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 9000
+              port: 9002
             initialDelaySeconds: 10
             periodSeconds: 5
       volumes:
