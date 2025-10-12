@@ -15,7 +15,9 @@ public class SecurityConfig {
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .authorizeExchange(exchange -> exchange.anyExchange().authenticated())
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/actuator/**").permitAll() // in a real app, secure this endpoint(Basic Auth, IP whitelisting, etc.)
+                        .anyExchange().authenticated())
                 .oauth2ResourceServer(c -> c.jwt(Customizer.withDefaults()))
                 .requestCache(cache -> cache.requestCache(NoOpServerRequestCache.getInstance()))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable) // statelessで、ブラウザはクライアントにならないのでCSRF無効化

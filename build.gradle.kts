@@ -29,6 +29,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-rabbit")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
@@ -67,10 +68,8 @@ dependencyManagement {
 tasks.named<BootBuildImage>("bootBuildImage") {
     environment = mapOf(
         "BP_JVM_VERSION" to "25",
-        "BP_JVM_TIMEZONE" to "Asia/Tokyo",
-        "LANG" to "ja_JP.UTF-8",
-        "LANGUAGE" to "ja_JP:ja",
-        "LC_ALL" to "ja_JP.UTF-8",
+        "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+        "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-Duser.timezone=Asia/Tokyo",
     )
     imageName = project.name + ":" + project.version
     docker {
