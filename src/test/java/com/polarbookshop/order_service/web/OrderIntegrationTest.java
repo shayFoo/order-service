@@ -7,20 +7,27 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.polarbookshop.order_service.domain.order.OrderStatus;
 import com.polarbookshop.order_service.event.message.OrderDispatchedMessage;
 import com.polarbookshop.order_service.persistence.order.R2DBCOrderRepository;
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.OutputDestination;
 import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.Message;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -74,6 +81,43 @@ public class OrderIntegrationTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Container
+    private static final KeycloakContainer keycloakContainer =
+            new KeycloakContainer("keycloak/keycloak:26.4")
+                    .withRealmImportFile("test-realm-config.json");
+
+    @DynamicPropertySource
+    static void dynamicProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
+                () -> keycloakContainer.getAuthServerUrl() + "/realms/PolarBookshop");
+    }
+
+    private static AccessTokenResponse isabelleToken;
+
+    @BeforeAll
+    static void generateAccessToken() {
+        String baseUrl = keycloakContainer.getAuthServerUrl()
+                + "/realms/PolarBookshop/protocol/openid-connect/token";
+        WebClient webClient = WebClient.builder()
+                .baseUrl(baseUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .build();
+        isabelleToken = authenticateWith("isabelle", webClient);
+    }
+
+    private static AccessTokenResponse authenticateWith(String username, WebClient webClient) {
+        return webClient
+                .post()
+                .body(BodyInserters.fromFormData("grant_type", "password")
+                        .with("client_id", "polar-test")
+                        .with("username", username)
+                        .with("password", "password")
+                )
+                .retrieve()
+                .bodyToMono(AccessTokenResponse.class)
+                .block();
+    }
+
     @BeforeEach
     void setup() {
         orderRepository.deleteAll().as(StepVerifier::create).verifyComplete();
@@ -95,6 +139,7 @@ public class OrderIntegrationTest {
 
         EntityExchangeResult<OrderResponse> exchangeResult = webTestClient.post()
                 .uri("/orders")
+                .headers(headers -> headers.setBearerAuth(isabelleToken.getToken()))
                 .bodyValue(new OrderRequest("1234567890", 3))
                 .exchange()
                 .expectStatus()

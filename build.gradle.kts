@@ -21,13 +21,14 @@ repositories {
 }
 
 extra["springCloudVersion"] = "2025.0.0"
-
+extra["testKeycloakVersion"] = "3.9.0"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-rabbit")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
@@ -42,6 +43,8 @@ dependencies {
     testImplementation("org.testcontainers:r2dbc")
     testImplementation("org.testcontainers:rabbitmq")
     testImplementation("org.wiremock.integrations:wiremock-spring-boot:3.10.6")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.github.dasniko:testcontainers-keycloak:${property("testKeycloakVersion")}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }

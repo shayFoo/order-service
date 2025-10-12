@@ -6,6 +6,8 @@ import reactor.core.publisher.Mono;
 public interface OrderRepository {
     Flux<Order> findAll();
 
+    Flux<Order> findAllByCreatedBy(String userId);
+
     Mono<Order> save(Order order);
 
     Mono<Order> dispatch(long id);

@@ -1,6 +1,11 @@
 spring:
   application:
     name:order-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/PolarBookshop
   config:
     import: "optional:configserver:"
   lifecycle:
