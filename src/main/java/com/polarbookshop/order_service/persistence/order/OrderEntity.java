@@ -27,7 +27,7 @@ public record OrderEntity(
         @CreatedBy
         String createdBy,
         @LastModifiedBy
-        String modifiedBy,
+        String lastModifiedBy,
         @Version
         int version
 ) {
@@ -69,7 +69,7 @@ public record OrderEntity(
                 this.createdAt,
                 this.updatedAt,
                 this.createdBy,
-                this.modifiedBy,
+                this.lastModifiedBy,
                 this.version
         );
     }

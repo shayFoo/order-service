@@ -4,11 +4,14 @@ import com.polarbookshop.order_service.config.DataConfig;
 import com.polarbookshop.order_service.domain.order.Order;
 import com.polarbookshop.order_service.domain.order.OrderRepository;
 import com.polarbookshop.order_service.domain.order.OrderStatus;
+import com.polarbookshop.order_service.persistence.order.OrderEntity;
+import com.polarbookshop.order_service.persistence.order.R2DBCOrderRepository;
 import com.polarbookshop.order_service.persistence.order.R2DBCOrderRepositoryAdaptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -16,6 +19,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import reactor.test.StepVerifier;
+
+import java.util.Objects;
 
 @DataR2dbcTest
 @Import({DataConfig.class, R2DBCOrderRepositoryAdaptor.class})
@@ -28,6 +33,9 @@ public class OrderRepositoryR2dbcTests {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private R2DBCOrderRepository r2dbcOrderRepository;
 
     @DynamicPropertySource
     static void postgresqlProperties(DynamicPropertyRegistry registry) {
@@ -51,6 +59,23 @@ public class OrderRepositoryR2dbcTests {
         Order rejected = Order.rejected(1, "1234567890", 1);
         StepVerifier.create(orderRepository.save(rejected))
                 .expectNextMatches(order -> order.status().equals(OrderStatus.REJECTED))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenCreateOrderNotAuthenticatedThenNoAuditMetadata() {
+        Order rejected = Order.rejected(123456, "1234567890", 1);
+        StepVerifier.create(r2dbcOrderRepository.save(OrderEntity.of(rejected)))
+                .expectNextMatches(order -> Objects.isNull(order.createdBy()) && Objects.isNull(order.lastModifiedBy()))
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockUser("test-user")
+    void whenCreateOrderAuthenticatedThenAuditMetadataPopulated() {
+        Order rejected = Order.rejected(123456, "1234567890", 1);
+        StepVerifier.create(r2dbcOrderRepository.save(OrderEntity.of(rejected)))
+                .expectNextMatches(order -> Objects.equals(order.createdBy(), "test-user") && Objects.equals(order.lastModifiedBy(), "test-user"))
                 .verifyComplete();
     }
 }
