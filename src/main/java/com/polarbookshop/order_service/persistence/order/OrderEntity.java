@@ -2,10 +2,7 @@ package com.polarbookshop.order_service.persistence.order;
 
 import com.polarbookshop.order_service.domain.order.Order;
 import com.polarbookshop.order_service.domain.order.OrderStatus;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.lang.NonNull;
 
@@ -27,6 +24,10 @@ public record OrderEntity(
         LocalDateTime createdAt,
         @LastModifiedDate
         LocalDateTime updatedAt,
+        @CreatedBy
+        String createdBy,
+        @LastModifiedBy
+        String modifiedBy,
         @Version
         int version
 ) {
@@ -38,8 +39,10 @@ public record OrderEntity(
                 order.bookPrice(),
                 order.quantity(),
                 order.status(),
-                null,
-                null,
+                null, // populated by @CreatedDate
+                null, // populated by @LastModifiedDate
+                null,  // populated by @CreatedBy
+                null, // populated by @LastModifiedBy
                 0
         );
     }
@@ -65,6 +68,8 @@ public record OrderEntity(
                 OrderStatus.DISPATCHED,
                 this.createdAt,
                 this.updatedAt,
+                this.createdBy,
+                this.modifiedBy,
                 this.version
         );
     }
