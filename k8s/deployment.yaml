@@ -33,22 +33,6 @@ spec:
           env:
             - name: BPL_JVM_THREAD_COUNT
               value: "50"
-            - name: SPRING_R2DBC_URL
-              value: r2dbc:postgresql://polar-postgres/polardb_order
-            - name: SPRING_FLYWAY_URL
-              value: jdbc:postgresql://polar-postgres/polardb_order
-            - name: SPRING_CLOUD_CONFIG_FAIL-FAST
-              value: "true"
-            - name: SPRING_CLOUD_CONFIG_RETRY_MAX-ATTEMPTS
-              value: "10"
-            - name: SPRING_CLOUD_CONFIG_URI
-              value: http://config-service
-            - name: POLAR_CATALOG-SERVICE-URI
-              value: http://catalog-service
-            - name: SPRING_RABBITMQ_HOST
-              value: polar-rabbitmq
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI
-              value: http://polar-keycloak/realms/PolarBookshop
           resources:
             requests:
               memory: "512Mi"
@@ -59,6 +43,8 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: order-config-volume
+              mountPath: /workspace/config
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
@@ -78,3 +64,6 @@ spec:
       volumes:
         - name: tmp
           emptyDir: { }
+        - name: order-config-volume
+          configMap:
+            name: order-config
