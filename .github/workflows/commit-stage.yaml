@@ -35,10 +35,13 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew build
+      - name: build kustomize
+        run: |
+          kubectl kustomize k8s --output='k8s/all.yaml'
       - name: Validate Kubernetes manifest
         uses: "stackrox/kube-linter-action@v1.0.7"
         with:
-          directory: k8s
+          directory: k8s/all.yaml
           fail-on-invalid-resource: true
   package:
     name: "Package and Publish"
