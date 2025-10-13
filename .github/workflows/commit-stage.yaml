@@ -3,7 +3,7 @@ on: "push"
 env:
   REGISTRY: "ghcr.io"
   IMAGE_NAME: "shayfoo/order-service"
-  VERSION: "latest"
+  VERSION: ${{ github.sha }}
 jobs:
   build:
     name: "Build and Test"
@@ -67,7 +67,7 @@ jobs:
         uses: "anchore/scan-action@v6"
         id: scan
         with:
-          image: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
           fail-build: "true"
           severity-cutoff: high
       - name: "Upload vulnerability report"
@@ -83,3 +83,7 @@ jobs:
       - name: "Publish container image"
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+      - name: "Publish container image with tag latest"
+        run: |
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
