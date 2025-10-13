@@ -7,7 +7,7 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/PolarBookshop
   config:
-    import: "optional:configserver:"
+    import: ""
   lifecycle:
     timeout-per-shutdown-phase: 15s
   threads:
@@ -27,6 +27,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/polardb_order
   cloud:
     config:
+      enabled: false
       uri: http://localhost:8888
       request-connect-timeout: 5000
       request-read-timeout: 5000
